@@ -31,7 +31,7 @@ function getSidebarHtml() {
 
 function onOpen(e) {
   SpreadsheetApp.getUi().createAddonMenu()
-      .addItem('Start', 'showSidebar')
+      .addItem('Add Coin Price', 'showSidebar')
       .addToUi();
 }
 
