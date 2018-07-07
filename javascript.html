@@ -1,0 +1,69 @@
+<script>
+  function appReady() {
+    $("#loader").remove();
+    $("#main-content").removeClass("hidden");
+  }
+
+  function bindAddButton() {
+    $("#add-to-sheet").click(function() {
+      type = "current_price"
+      coin = $("#coin-list").val();
+      currency = $("#currency-list").val();
+
+      google.script.run
+        .withSuccessHandler(
+          function(supportedCoins) {
+            console.log("Success!")
+          })
+        .withFailureHandler(
+          function(msg) {
+            console.error(msg);
+          })
+        .insertGeckoScript(type, coin, currency);
+    });
+  }
+
+  function loadCoins() {
+    google.script.run
+      .withSuccessHandler(
+        function(supportedCoins) {
+          setupCoinList(supportedCoins);
+          appReady();
+        })
+      .withFailureHandler(
+        function(msg) {
+          console.error(msg);
+        })
+      .getSupportedCoins();
+  }
+
+  function loadCurrencies() {
+    var select = $('#currency-list');
+    var options = select.prop('options');
+    $('option', select).remove();
+    getCurrencyList().forEach(function(coin) {
+      options[options.length] = new Option(coin.name, coin.id);
+    });
+    select.selectize({
+      sortField: 'text'
+    });
+  }
+
+  function setupCoinList(coins) {
+    var select = $('#coin-list');
+    var options = select.prop('options');
+    $('option', select).remove();
+    coins.forEach(function(coin) {
+      options[options.length] = new Option(coin.name, coin.id);
+    });
+    select.selectize({
+      sortField: 'text'
+    });
+  }
+
+  window.addEventListener('load', function() {
+    loadCoins();
+    loadCurrencies();
+    bindAddButton();
+  });
+</script>

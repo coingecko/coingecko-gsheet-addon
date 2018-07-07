@@ -5,51 +5,41 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.5/css/selectize.default.min.css">
     <script src=" https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.5/js/standalone/selectize.min.js"></script>
-    
+
     <style>
-    
     .top-image {
       width: 100%;
     }
+
+    .hidden {
+      visibility: hidden;
+    }
     </style>
   </head>
-  
+
   <body>
     <div>
       <img class="top-image" src="https://store.coingecko.com/uploads/store/37d497f3363a8ab53eddca5ca938e49b.png" />
-      
-      <select id="coin-list" class="coin-list">
-        
-      </select>
+
+      <div id="loader">
+        <img src="https://cdnjs.cloudflare.com/ajax/libs/galleriffic/2.0.1/css/loader.gif" />
+      </div>
+
+      <div id="main-content" class="hidden">
+        <select id="coin-list" class="coin-list">
+          <option>Loading...</option>
+        </select>
+
+        <select id="currency-list">
+        </select>
+
+        <button id="add-to-sheet">
+          Add to Sheet
+        </button>
+      </div>
     </div>
 
-    <script>    
-       function setupCoinList(coins) {
-         var select = $('#coin-list');
-         var options = select.prop('options');
-         $('option', select).remove();
-         coins.forEach(function(coin) {
-           options[options.length] = new Option(coin.name, coin.id);
-         });
-         select.selectize({
-           sortField: 'text'
-         });
-       }
-       
-       (function loadSupportedCurrencies(_this) {
-         google.script.run
-              .withSuccessHandler(
-                function(supportedCoins) {
-                  _this.setupCoinList(supportedCoins);
-                })
-              .withFailureHandler(
-                function(msg) {
-                  console.error(msg);
-                })
-              .getSupportedCoins();
-       })(this);
-    </script>
-    
-
+    <?!= include('currency_list'); ?>
+    <?!= include('javascript'); ?>
   </body>
 </html>

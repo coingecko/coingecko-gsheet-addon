@@ -16,8 +16,21 @@ function getJSON_(endpoint) {
   }
 }
 
+function buildGeckoScript_(type, coin, currency) {
+  if(type == "current_price") {
+    return '=COINGECKO("' + coin + '/' + currency + '")';
+  }
+}
+
 function getSupportedCoins() {
   return getJSON_("coins/list");
+}
+
+function insertGeckoScript(type, coin, currency) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var currentCell = sheet.getCurrentCell();
+  var geckoScript = buildGeckoScript_(type, coin, currency)
+  currentCell.setValue(geckoScript);
 }
 
 /**
@@ -37,14 +50,13 @@ function COINGECKO(pair) {
   coin_id = values[0].toLowerCase();
   currency = values[1].toLowerCase();
 
-  var response = getJSON_("coins/" + coin_id);
+  urlToRequest = "coins/markets?vs_currency=" + currency + "&" + "ids=" + coin_id
+  var response = getJSON_(urlToRequest);
 
-  var current_price_list = response["market_data"]["current_price"];
-  price = current_price_list[currency]
-
-  if (price == null || price == undefined) {
-     throw new Error("Invalid currency specified. " + currency + " is not a valid currency")
+  if (response["error"] || response.length == 0) {
+    throw new Error("Invalid currency or coin")
+  } else {
+    var price = response[0]["current_price"]
+    return price;
   }
-
-  return price;
 }

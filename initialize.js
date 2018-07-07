@@ -1,3 +1,14 @@
+function include(filename) {
+  return HtmlService.createHtmlOutputFromFile(filename)
+      .getContent();
+}
+
+function getSidebarHtml() {
+  output = HtmlService.createTemplateFromFile('coingecko_sidebar').evaluate();
+  output.setTitle('Coingecko');
+  return output;
+}
+
 /**
  * @OnlyCurrentDoc
  *
@@ -45,6 +56,6 @@ function onInstall(e) {
  * the mobile add-on version.
  */
 function showSidebar() {
-  var ui = HtmlService.createHtmlOutputFromFile('coingecko_sidebar').setTitle('Coingecko');
+  var ui = getSidebarHtml();
   SpreadsheetApp.getUi().showSidebar(ui);
 }
