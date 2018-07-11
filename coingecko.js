@@ -18,7 +18,7 @@ function getJSON_(endpoint) {
 
 function buildGeckoScript_(type, coin, currency) {
   if(type == "current_price") {
-    return '=COINGECKO("' + coin + '/' + currency + '")';
+    return '=COINGECKO("id:' + coin + '/' + currency + '")';
   }
 }
 
