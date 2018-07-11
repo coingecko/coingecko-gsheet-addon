@@ -50,7 +50,15 @@ function COINGECKO(pair) {
   coin_id = values[0].toLowerCase();
   currency = values[1].toLowerCase();
 
-  urlToRequest = "coins/markets?vs_currency=" + currency + "&" + "ids=" + coin_id
+  urlToRequest = "coins/markets?vs_currency=" + currency;
+
+  if (coin_id.match(/^id:/)) {
+    coin_id = coin_id.match(/id:(.*)/)[1];
+    urlToRequest += "&" + "ids=" + coin_id;
+  } else {
+    urlToRequest += "&" + "symbols=" + coin_id;
+  }
+
   var response = getJSON_(urlToRequest);
 
   if (response["error"] || response.length == 0) {
