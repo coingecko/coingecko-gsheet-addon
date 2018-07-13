@@ -3,6 +3,8 @@
   <head>
     <!-- Include Choices CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.5/css/selectize.default.min.css">
+    <?!= include('css'); ?>
+
     <script src=" https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.5/js/standalone/selectize.min.js"></script>
 
@@ -33,7 +35,7 @@
         <select id="currency-list">
         </select>
 
-        <button id="add-to-sheet">
+        <button id="add-to-sheet" class="w3-button add-to-sheet-button">
           Add to Sheet
         </button>
       </div>
