@@ -17,8 +17,9 @@ function getJSON_(endpoint) {
 }
 
 function buildGeckoScript_(type, coin, currency) {
+  refreshCounterCell = getRefreshCounterCell_()
   if(type == "current_price") {
-    return '=COINGECKO("id:' + coin + '/' + currency + '")';
+    return '=COINGECKO("id:' + coin + '/' + currency + '", $' + refreshCounterCell + ')';
   }
 }
 
@@ -30,7 +31,7 @@ function updateCounterValue_() {
   var sheets = SpreadsheetApp.getActiveSpreadsheet().getSheets();
   for(var i=0; i < sheets.length; i++) {
     var sheet = sheets[i];
-    var currentCell = sheet.getRange("Z9999");
+    var currentCell = sheet.getRange(getRefreshCounterCell_());
     currentValue = currentCell.getValue() || 1;
     newValue = currentValue += 1;
     currentCell.setValue(newValue);
@@ -45,6 +46,10 @@ function insertGeckoScript(type, coin, currency) {
   var currentCell = sheet.getCurrentCell();
   var geckoScript = buildGeckoScript_(type, coin, currency)
   currentCell.setValue(geckoScript);
+}
+
+function getRefreshCounterCell_() {
+  return "Z9999"
 }
 
 /**
