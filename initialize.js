@@ -32,6 +32,7 @@ function getSidebarHtml() {
 function onOpen(e) {
   SpreadsheetApp.getUi().createAddonMenu()
       .addItem('Add Coin Price', 'showSidebar')
+      .addItem('Refresh', 'refreshData')
       .addToUi();
 }
 
@@ -58,4 +59,8 @@ function onInstall(e) {
 function showSidebar() {
   var ui = getSidebarHtml();
   SpreadsheetApp.getUi().showSidebar(ui);
+}
+
+function refreshData() {
+  updateCounterValue_();
 }

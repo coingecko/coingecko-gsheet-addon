@@ -26,6 +26,20 @@ function getSupportedCoins() {
   return getJSON_("coins/list");
 }
 
+function updateCounterValue_() {
+  var sheets = SpreadsheetApp.getActiveSpreadsheet().getSheets();
+  for(var i=0; i < sheets.length; i++) {
+    var sheet = sheets[i];
+    var currentCell = sheet.getRange("Z9999");
+    currentValue = currentCell.getValue() || 1;
+    newValue = currentValue += 1;
+    currentCell.setValue(newValue);
+    message = "Coingecko: Please do not change this cell " +
+               "as it will affect the refreshing of price data"
+    currentCell.setNote(message)
+  }
+}
+
 function insertGeckoScript(type, coin, currency) {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   var currentCell = sheet.getCurrentCell();
