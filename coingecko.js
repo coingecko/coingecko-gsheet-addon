@@ -17,10 +17,18 @@ function getJSON_(endpoint) {
 }
 
 function buildGeckoScript_(type, coin, currency) {
-  refreshCounterCell = getRefreshCounterCell_()
+  refreshCounterCell = getRefreshCounterCell_();
+  functionName = "=COINGECKO";
+
   if(type == "current_price") {
-    return '=COINGECKO("id:' + coin + '/' + currency + '", $' + refreshCounterCell + ')';
+    functionName = "=COINGECKO";
+  } else if (type == "market_cap") {
+    functionName = "=COINGECKO_MARKETCAP";
+  } else if (type == "total_volume") {
+    functionName = "=COINGECKO_TRADING_VOLUME";
   }
+
+  return functionName + '("id:' + coin + '/' + currency + '", $' + refreshCounterCell + ')';
 }
 
 function getSupportedCoins() {
@@ -52,14 +60,7 @@ function getRefreshCounterCell_() {
   return "Z9999"
 }
 
-/**
- * Returns the price of the specified cryptocurrency pair
- *
- * @param {pair} The currency pair. E.g "ethereum/USD", "bitcoin/USD"
- * @return The current price of specified cryptocurrency pair rounded
- * @customfunction
- */
-function COINGECKO(pair) {
+function getCoinData_(pair) {
   values = pair.split('/');
 
   if(values.length != 2) {
@@ -82,8 +83,43 @@ function COINGECKO(pair) {
 
   if (response["error"] || response.length == 0) {
     throw new Error("Invalid currency or coin")
-  } else {
-    var price = response[0]["current_price"]
-    return price;
   }
+
+  return response[0];
+}
+
+/**
+ * Returns the price of the specified cryptocurrency pair
+ *
+ * @param {pair} The currency pair. E.g "ethereum/USD", "bitcoin/USD"
+ * @return The current price of specified cryptocurrency pair rounded
+ * @customfunction
+ */
+function COINGECKO(pair) {
+  coinData = getCoinData_(pair)
+  return coinData["current_price"];
+}
+
+/**
+ * Returns the market cap of the specified cryptocurrency pair
+ *
+ * @param {pair} The currency pair. E.g "ethereum/USD", "bitcoin/USD"
+ * @return The market cap of specified cryptocurrency pair rounded
+ * @customfunction
+ */
+function COINGECKO_MARKETCAP(pair) {
+  coinData = getCoinData_(pair)
+  return coinData["market_cap"];
+}
+
+/**
+ * Returns the trading volume of the specified cryptocurrency pair
+ *
+ * @param {pair} The currency pair. E.g "ethereum/USD", "bitcoin/USD"
+ * @return The trading volume of specified cryptocurrency pair rounded
+ * @customfunction
+ */
+function COINGECKO_TRADING_VOLUME(pair) {
+  coinData = getCoinData_(pair)
+  return coinData["total_volume"];
 }

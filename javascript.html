@@ -6,7 +6,7 @@
 
   function bindAddButton() {
     $("#add-to-sheet").click(function() {
-      type = "current_price"
+      type = $("#type").val();
       coin = $("#coin-list").val();
       currency = $("#currency-list").val();
 
@@ -61,9 +61,15 @@
     });
   }
 
+  function setupType() {
+    var select = $('#type');
+    select.selectize();
+  }
+
   window.addEventListener('load', function() {
     loadCoins();
     loadCurrencies();
+    setupType();
     bindAddButton();
   });
 </script>
