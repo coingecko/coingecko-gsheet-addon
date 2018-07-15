@@ -50,6 +50,7 @@ function updateCounterValue_() {
 }
 
 function insertGeckoScript(type, coin, currency) {
+  updateCounterValue_();
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   var currentCell = sheet.getCurrentCell();
   var geckoScript = buildGeckoScript_(type, coin, currency)
