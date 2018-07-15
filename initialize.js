@@ -33,6 +33,8 @@ function onOpen(e) {
   SpreadsheetApp.getUi().createAddonMenu()
       .addItem('Add Coin Price', 'showSidebar')
       .addItem('Refresh', 'refreshData')
+      .addSeparator()
+      .addItem('Version', 'showVersion')
       .addToUi();
 }
 

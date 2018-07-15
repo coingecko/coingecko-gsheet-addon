@@ -1,3 +1,10 @@
+var GECKO_SCRIPT_VERSION = "0.6 Alpha"
+
+function showVersion() {
+  var versionString = "VERSION: " + GECKO_SCRIPT_VERSION;
+  SpreadsheetApp.getUi().alert(versionString);
+}
+
 function generateEndpointUrl_(endpoint) {
   return "https://api.coingecko.com/api/v3/" + endpoint;
 }
