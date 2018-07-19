@@ -45,7 +45,8 @@
       options[options.length] = new Option(coin.name, coin.id);
     });
     select.selectize({
-      sortField: 'text'
+      sortField: 'text',
+      items: ["usd"]
     });
   }
 
