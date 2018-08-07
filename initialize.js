@@ -65,4 +65,5 @@ function showSidebar() {
 
 function refreshData() {
   updateCounterValue_();
+  updateExistingUnmarkedCells_()
 }

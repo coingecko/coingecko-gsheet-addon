@@ -66,6 +66,49 @@ function updateCounterValue_() {
   }
 }
 
+function updateExistingUnmarkedCells_() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  patchFormulasForSheet(sheet)
+}
+
+function patchFormulasForSheet(sheet) {
+  var range = sheet.getDataRange();
+  var formulas = range.getFormulas();
+
+  formulasPatched = false;
+
+  for (var i = 0; i < formulas.length; i++) {
+    for (var j = 0; j < formulas[i].length; j++) {
+      formula = formulas[i][j]
+
+      if (shouldPatchGeckoFormula(formula)) {
+        formulas[i][j] = patchFormula(formula);
+        formulasPatched = true;
+      }
+    }
+  }
+
+  if (formulasPatched) {
+    range.setFormulas(formulas);
+  }
+}
+
+function shouldPatchGeckoFormula(formula) {
+  return formula && matchesGeckoFormula(formula) && !isFormulaPatched(formula);
+}
+
+function matchesGeckoFormula(formula) {
+  return formula.match(/^=COINGECKO/);
+}
+
+function isFormulaPatched(formula) {
+  return formula.indexOf(getRefreshCounterCell_()) != -1;
+}
+
+function patchFormula(formula) {
+  return formula.replace(/^(=COINGECKO[\w]*)\("(.*)".*\)/, "$1(\"$2\", $" + getRefreshCounterCell_() + ")");
+}
+
 function insertGeckoScript(type, coin, currency) {
   updateCounterValue_();
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
@@ -75,7 +118,7 @@ function insertGeckoScript(type, coin, currency) {
 }
 
 function getRefreshCounterCell_() {
-  return "Z9999"
+  return "AZ1000";
 }
 
 function getCoinData_(pair) {
