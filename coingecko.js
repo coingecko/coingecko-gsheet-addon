@@ -1,4 +1,4 @@
-var GECKO_SCRIPT_VERSION = "0.6.2 Alpha"
+var GECKO_SCRIPT_VERSION = "0.6.3 Alpha"
 
 function showVersion() {
   var versionString = "VERSION: " + GECKO_SCRIPT_VERSION;
