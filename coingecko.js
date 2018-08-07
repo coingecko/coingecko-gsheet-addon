@@ -44,15 +44,25 @@ function getSupportedCoins() {
 
 function updateCounterValue_() {
   var sheets = SpreadsheetApp.getActiveSpreadsheet().getSheets();
-  for(var i=0; i < sheets.length; i++) {
-    var sheet = sheets[i];
-    var currentCell = sheet.getRange(getRefreshCounterCell_());
-    currentValue = currentCell.getValue() || 1;
-    newValue = currentValue += 1;
-    currentCell.setValue(newValue);
-    message = "Coingecko: Please do not change this cell " +
-               "as it will affect the refreshing of price data"
-    currentCell.setNote(message)
+  try {
+    for(var i=0; i < sheets.length; i++) {
+      var sheet = sheets[i];
+      var currentCell = sheet.getRange(getRefreshCounterCell_());
+      currentValue = currentCell.getValue() || 1;
+      newValue = currentValue += 1;
+      currentCell.setValue(newValue);
+      message = "Coingecko: Please do not change this cell " +
+                 "as it will affect the refreshing of price data"
+      currentCell.setNote(message)
+    }
+  }
+  catch (error) {
+    message = error.message
+    if (message.match(/^This action would increase the number of cells in the workbook/)) {
+      throw new Error("There are too many columns in one of the sheets. Please delete any unwanted columns and try again");
+    } else {
+      throw error;
+    }
   }
 }
 
