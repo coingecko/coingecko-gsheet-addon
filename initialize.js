@@ -51,7 +51,6 @@ function onOpen(e) {
  */
 function onInstall(e) {
   onOpen(e);
-  createTimeDrivenTriggers_();
 }
 
 /**
