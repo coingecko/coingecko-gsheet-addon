@@ -149,13 +149,6 @@ function getCoinData_(pair) {
   return response[0];
 }
 
-function createTimeDrivenTriggers_() {
-  ScriptApp.newTrigger('updateCounterValue_')
-      .timeBased()
-      .everyHours(1)
-      .create();
-}
-
 /**
  * Returns the price of the specified cryptocurrency pair
  *
