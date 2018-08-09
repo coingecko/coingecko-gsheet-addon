@@ -47,7 +47,7 @@ function updateCounterValue_() {
   try {
     for(var i=0; i < sheets.length; i++) {
       var sheet = sheets[i];
-      var currentCell = sheet.getRange(getRefreshCounterCell_());
+      var currentCell = sheet.getRange(getRefreshCounterCell_(sheet));
       currentValue = currentCell.getValue() || 1;
       newValue = currentValue += 1;
       currentCell.setValue(newValue);
@@ -117,8 +117,13 @@ function insertGeckoScript(type, coin, currency) {
   currentCell.setValue(geckoScript);
 }
 
-function getRefreshCounterCell_() {
-  return "AZ1000";
+function getRefreshCounterCell_(sheet) {
+  sheet = sheet || SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  lastRowIndex = sheet.getMaxRows()
+  lastColumnIndex = sheet.getMaxColumns()
+
+  var range = sheet.getRange(lastRowIndex, lastColumnIndex);
+  return range.getA1Notation();
 }
 
 function getCoinData_(pair) {
