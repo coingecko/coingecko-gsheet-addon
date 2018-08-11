@@ -16,8 +16,8 @@ function getJSON_(endpoint) {
   if (response.getResponseCode() == 200) {
     return JSON.parse(response.getContentText())
   } else {
-    Logger.log(response.getResponseCode());
-    Logger.log(response.getContentText());
+    console.log(response.getResponseCode());
+    console.log(response.getContentText());
     errorMessage = JSON.parse(response.getContentText())["error"];
     throw new Error(errorMessage);
   }
@@ -126,6 +126,60 @@ function getRefreshCounterCell_(sheet) {
   return range.getA1Notation();
 }
 
+function getCacheKey(idOrSymbol, currency) {
+  if (idOrSymbol.match(/^id:/)) {
+    id = idOrSymbol.match(/id:(.*)/)[1];
+  } else {
+    id = idOrSymbol;
+  }
+  return id + "_" + currency;
+}
+
+function cacheResponse_(idOrSymbol, currency, serverResponse) {
+  var scriptCache = CacheService.getScriptCache();
+  var key = getCacheKey(idOrSymbol, currency);
+  console.log("Caching response for " + key);
+
+  dataToCache = JSON.stringify(serverResponse);
+
+  cacheForSeconds = 120;
+  scriptCache.put(key, dataToCache, cacheForSeconds);
+}
+
+function getValueFromCache_(idOrSymbol, currency) {
+  var scriptCache = CacheService.getScriptCache();
+  var cacheKey = getCacheKey(idOrSymbol, currency);
+
+  dataInCache = scriptCache.get(cacheKey);
+
+  if (dataInCache) {
+    return JSON.parse(dataInCache);
+  }
+}
+
+function getValueFromServer_(idOrSymbol, currency) {
+  urlToRequest = "coins/markets?vs_currency=" + currency;
+
+  if (idOrSymbol.match(/^id:/)) {
+    idOrSymbol = idOrSymbol.match(/id:(.*)/)[1];
+    urlToRequest += "&" + "ids=" + idOrSymbol;
+  } else {
+    urlToRequest += "&" + "symbols=" + idOrSymbol;
+  }
+
+  var response = getJSON_(urlToRequest);
+
+  if (response["error"] || response.length == 0) {
+    throw new Error("Invalid currency or coin")
+  }
+
+  console.log("Response for " + idOrSymbol + " " + currency + " was requested from the server");
+
+  response = response[0];
+  cacheResponse_(idOrSymbol, currency, response);
+  return response;
+}
+
 function getCoinData_(pair) {
   values = pair.split('/');
 
@@ -136,22 +190,14 @@ function getCoinData_(pair) {
   coin_id = values[0].toLowerCase();
   currency = values[1].toLowerCase();
 
-  urlToRequest = "coins/markets?vs_currency=" + currency;
+  valueFromCache = getValueFromCache_(coin_id, currency)
 
-  if (coin_id.match(/^id:/)) {
-    coin_id = coin_id.match(/id:(.*)/)[1];
-    urlToRequest += "&" + "ids=" + coin_id;
+  if (valueFromCache) {
+    console.log("Response for " + pair + " was served from the cache!");
+    return valueFromCache;
   } else {
-    urlToRequest += "&" + "symbols=" + coin_id;
+    return getValueFromServer_(coin_id, currency);
   }
-
-  var response = getJSON_(urlToRequest);
-
-  if (response["error"] || response.length == 0) {
-    throw new Error("Invalid currency or coin")
-  }
-
-  return response[0];
 }
 
 /**
