@@ -75,21 +75,16 @@ function patchFormulasForSheet(sheet) {
   var range = sheet.getDataRange();
   var formulas = range.getFormulas();
 
-  formulasPatched = false;
-
   for (var i = 0; i < formulas.length; i++) {
     for (var j = 0; j < formulas[i].length; j++) {
       formula = formulas[i][j]
 
       if (shouldPatchGeckoFormula(formula)) {
-        formulas[i][j] = patchFormula(formula);
-        formulasPatched = true;
+        patchedFormula = patchFormula(formula);
+        cell = range.getCell(i + 1, j + 1);
+        cell.setValue(patchedFormula);
       }
     }
-  }
-
-  if (formulasPatched) {
-    range.setFormulas(formulas);
   }
 }
 
