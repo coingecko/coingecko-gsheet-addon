@@ -1,4 +1,5 @@
-var GECKO_SCRIPT_VERSION = "0.6.8 Alpha"
+var GECKO_SCRIPT_VERSION = "0.6.9 Alpha";
+var RETRY_SLEEP_PERIODS = [5000, 10000, 20000, 30000, 60000, 120000];
 
 function showVersion() {
   var versionString = "VERSION: " + GECKO_SCRIPT_VERSION;
@@ -11,16 +12,25 @@ function generateEndpointUrl_(endpoint) {
 
 function getJSON_(endpoint) {
   var url = generateEndpointUrl_(endpoint);
-  response = UrlFetchApp.fetch(url, { muteHttpExceptions: true })
+  retryCount = 1;
+  maxRetries = RETRY_SLEEP_PERIODS.length
 
-  if (response.getResponseCode() == 200) {
-    return JSON.parse(response.getContentText())
-  } else {
-    console.log(response.getResponseCode());
-    console.log(response.getContentText());
-    errorMessage = JSON.parse(response.getContentText())["error"];
-    throw new Error(errorMessage);
+  while (retryCount <= maxRetries) {
+    response = UrlFetchApp.fetch(url, { muteHttpExceptions: true })
+
+    if (response.getResponseCode() == 200) {
+      return JSON.parse(response.getContentText())
+    } else {
+      timeToSleep = RETRY_SLEEP_PERIODS[retryCount - 1]
+      console.log("Failed to get response. Sleeping for " + timeToSleep)
+      Utilities.sleep(timeToSleep);
+      retryCount += 1;
+    }
   }
+
+  retryFailureMessage = "Tried for " + maxRetries + " times but failed";
+  console.error(retryFailureMessage)
+  throw new Error(retryFailureMessage);
 }
 
 function buildGeckoScript_(type, coin, currency) {
@@ -119,37 +129,6 @@ function getRefreshCounterCell_(sheet) {
 
   var range = sheet.getRange(lastRowIndex, lastColumnIndex);
   return range.getA1Notation();
-}
-
-function getCacheKey(idOrSymbol, currency) {
-  if (idOrSymbol.match(/^id:/)) {
-    id = idOrSymbol.match(/id:(.*)/)[1];
-  } else {
-    id = idOrSymbol;
-  }
-  return id + "_" + currency;
-}
-
-function cacheResponse_(idOrSymbol, currency, serverResponse) {
-  var scriptCache = CacheService.getScriptCache();
-  var key = getCacheKey(idOrSymbol, currency);
-  console.log("Caching response for " + key);
-
-  dataToCache = JSON.stringify(serverResponse);
-
-  cacheForSeconds = 120;
-  scriptCache.put(key, dataToCache, cacheForSeconds);
-}
-
-function getValueFromCache_(idOrSymbol, currency) {
-  var scriptCache = CacheService.getScriptCache();
-  var cacheKey = getCacheKey(idOrSymbol, currency);
-
-  dataInCache = scriptCache.get(cacheKey);
-
-  if (dataInCache) {
-    return JSON.parse(dataInCache);
-  }
 }
 
 function getValueFromServer_(idOrSymbol, currency) {
