@@ -20,7 +20,7 @@ function getSidebarHtml() {
  */
 
 /**
- * Creates a menu entry in the Google Docs UI when the document is opened.
+ * Creates a menu entry in the Google Sheets UI when the document is opened.
  * This method is only used by the regular add-on, and is never called by
  * the mobile add-on version.
  */
